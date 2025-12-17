@@ -18,6 +18,11 @@ A high-performance events management dashboard built with Next.js 15, TypeScript
 
 Live demo: https://tl-events-app.vercel.app/
 
+4. **Run Tests:**
+  ```bash
+  npm test
+  ```
+
 ## 🛠 Technical Decisions & Architecture
 
 1. Hybrid Server/Client Architecture
