@@ -4,66 +4,40 @@ import { EventsPagination } from "@/components/events-pagination";
 import { EventsTable } from "@/components/events-table";
 import { StatCard } from "@/components/stat-card";
 import { Input } from "@/components/ui/input";
+import { useEventsUrl } from "@/hooks/use-events-url"; // New
 import { Event, EVENT_STATUS } from '@/types/event';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 const ITEMS_PER_PAGE = 5;
 
-interface EventsClientViewProps {
-  initialEvents: Event[];
-}
-
-export default function EventsClientView({ initialEvents }: EventsClientViewProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const [events] = useState<Event[]>(initialEvents);
-
-  const currentStatus = searchParams.get('status') || 'all';
-  const sortOrder = searchParams.get('sort') || 'desc';
-  const currentPage = Number(searchParams.get('page')) || 1;
-  const searchQuery = searchParams.get('q') || '';
-
-  const [searchTerm, setSearchTerm] = useState(searchQuery);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      updateURL({ q: searchTerm || null, page: '1' });
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const updateURL = (newParams: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams);
-    Object.entries(newParams).forEach(([key, value]) => {
-      if (value === null || value === 'all') params.delete(key);
-      else params.set(key, value);
-    });
-    router.push(`${pathname}?${params.toString()}`);
-  };
+export default function EventsClientView({ initialEvents }: { initialEvents: Event[] }) {
+  const {
+    currentStatus,
+    sortOrder,
+    currentPage,
+    searchQuery,
+    searchTerm,
+    setSearchTerm,
+    updateURL
+  } = useEventsUrl();
 
   const stats = useMemo(() => ({
-    total: events.length,
-    upcoming: events.filter(e => e.status === EVENT_STATUS.UPCOMING).length,
-    live: events.filter(e => e.status === EVENT_STATUS.LIVE).length,
-    past: events.filter(e => e.status === EVENT_STATUS.PAST).length,
-  }), [events]);
+    total: initialEvents.length,
+    upcoming: initialEvents.filter(e => e.status === EVENT_STATUS.UPCOMING).length,
+    live: initialEvents.filter(e => e.status === EVENT_STATUS.LIVE).length,
+    past: initialEvents.filter(e => e.status === EVENT_STATUS.PAST).length,
+  }), [initialEvents]);
 
   const processedEvents = useMemo(() => {
-    let result = [...events];
+    let result = [...initialEvents];
     
-    if (currentStatus !== 'all') {
-      result = result.filter(e => e.status === currentStatus);
-    }
-
+    if (currentStatus !== 'all') result = result.filter(e => e.status === currentStatus);
+    
     if (searchQuery) {
       const term = searchQuery.toLowerCase().trim();
       result = result.filter(e => 
         e.type.toLowerCase().includes(term) || 
-        e.zone.city.name.toLowerCase().includes(term) ||
-        e.zone.name.toLowerCase().includes(term)
+        e.zone.city.name.toLowerCase().includes(term)
       );
     }
 
@@ -74,17 +48,17 @@ export default function EventsClientView({ initialEvents }: EventsClientViewProp
     });
     
     return result;
-  }, [events, currentStatus, sortOrder, searchQuery]);
+  }, [initialEvents, currentStatus, sortOrder, searchQuery]);
 
   const paginatedEvents = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return processedEvents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return processedEvents.slice(start, start + ITEMS_PER_PAGE);
   }, [processedEvents, currentPage]);
 
   const totalPages = Math.ceil(processedEvents.length / ITEMS_PER_PAGE);
 
   return (
-    <>
+    <div className="space-y-8">
       <h1 className="text-3xl font-bold">Events Management</h1>
 
       <div className="grid gap-4 md:grid-cols-4">
@@ -94,13 +68,12 @@ export default function EventsClientView({ initialEvents }: EventsClientViewProp
         <StatCard title="Past" value={stats.past} />
       </div>
 
-      <div className="w-full md:w-72">
-        <Input 
-          placeholder="Search by event or city..." 
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+      <Input 
+        className="max-w-72"
+        placeholder="Search events..." 
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
       <div className="space-y-4">
         <EventsTable 
@@ -119,6 +92,6 @@ export default function EventsClientView({ initialEvents }: EventsClientViewProp
           onPageChange={(p) => updateURL({ page: p.toString() })}
         />
       </div>
-    </>
+    </div>
   );
 }
