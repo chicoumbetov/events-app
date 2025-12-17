@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useEventsUrl } from "@/hooks/use-events-url";
 import { calculateEventStats, getProcessedEvents } from "@/lib/event-logic";
 import { Event } from '@/types/event';
+import { Activity, Calendar, History, Layers, Search } from "lucide-react";
 import { useMemo } from 'react';
 
 const ITEMS_PER_PAGE = 5;
@@ -44,19 +45,19 @@ export default function EventsClientView({ initialEvents }: { initialEvents: Eve
       <h1 className="text-3xl font-bold tracking-tight">Events Management</h1>
 
       <div className="grid gap-4 md:grid-cols-4" role="region" aria-label="Event statistics">
-        <StatCard title="Total Events" value={stats.total} />
-        <StatCard title="Upcoming" value={stats.upcoming} />
-        <StatCard title="Live" value={stats.live} />
-        <StatCard title="Past" value={stats.past} />
+      <StatCard title="Total Events" value={stats.total} icon={Layers} />
+        <StatCard title="Upcoming" value={stats.upcoming} icon={Calendar} iconColor="text-blue-500" />
+        <StatCard title="Live" value={stats.live} icon={Activity} iconColor="text-green-500" />
+        <StatCard title="Past" value={stats.past} icon={History} iconColor="text-gray-500" />
       </div>
 
-      <div className="w-full md:w-72">
-        <label htmlFor="event-search" className="sr-only">
-          Search by event type or city
-        </label>
+      <div className="relative w-full md:w-72">
+        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <label htmlFor="event-search" className="sr-only">Search by event type or city</label>
         <Input 
           id="event-search"
-          placeholder="Search events..." 
+          className="pl-9"
+          placeholder="Search events..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           aria-controls="events-table"
