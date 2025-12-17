@@ -48,6 +48,29 @@ export default function EventsPage() {
     };
   }, [events]);
 
+  const sortOrder = searchParams.get('sort') || 'desc';
+
+  const handleSortChange = () => {
+    const nextOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    const params = new URLSearchParams(searchParams);
+    params.set('sort', nextOrder);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const processedEvents = useMemo(() => {
+    let result = currentStatus === 'all' 
+      ? [...events] 
+      : events.filter(e => e.status === currentStatus);
+
+    result.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    return result;
+  }, [events, currentStatus, sortOrder])
+
   if (loading) return <div className="p-8 text-center">Loading events...</div>;
 
   return (
@@ -62,9 +85,11 @@ export default function EventsPage() {
     </div>
 
     <EventsTable 
-      events={filteredEvents} 
+      events={processedEvents} 
       currentStatus={currentStatus}
       onStatusChange={handleStatusChange}
+      sortOrder={sortOrder}
+      onSortChange={handleSortChange}
     />
   </div>
   );

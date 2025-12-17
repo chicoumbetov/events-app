@@ -17,9 +17,11 @@ interface EventsTableProps {
   events: Event[];
   currentStatus: string;
   onStatusChange: (value: string) => void;
+  sortOrder: string;
+  onSortChange: () => void;
 }
 
-export function EventsTable({ events, currentStatus, onStatusChange }: EventsTableProps) {
+export function EventsTable({ events, currentStatus, onStatusChange, sortOrder, onSortChange }: EventsTableProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case EVENT_STATUS.LIVE: return "bg-green-500 hover:bg-green-600";
@@ -36,7 +38,9 @@ export function EventsTable({ events, currentStatus, onStatusChange }: EventsTab
           <TableRow>
             <TableHead>Type</TableHead>
             <TableHead>Location</TableHead>
-            <TableHead>Date</TableHead>
+            <TableHead className="cursor-pointer hover:text-foreground" onClick={onSortChange}>
+              Date {sortOrder === 'asc' ? '↑' : '↓'}
+            </TableHead>
             <TableHead className="w-[180px]">
               <Select value={currentStatus} onValueChange={onStatusChange}>
                 <SelectTrigger className="h-8 border-none bg-transparent p-0 focus:ring-0 shadow-none font-bold">
