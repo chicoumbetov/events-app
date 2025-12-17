@@ -5,7 +5,8 @@ import { EventsTable } from "@/components/events-table";
 import { StatCard } from "@/components/stat-card";
 import { Input } from "@/components/ui/input";
 import { useEventsUrl } from "@/hooks/use-events-url";
-import { Event, EVENT_STATUS } from '@/types/event';
+import { calculateEventStats, getProcessedEvents } from "@/lib/event-logic";
+import { Event } from '@/types/event';
 import { useMemo } from 'react';
 
 const ITEMS_PER_PAGE = 5;
@@ -21,34 +22,15 @@ export default function EventsClientView({ initialEvents }: { initialEvents: Eve
     updateURL
   } = useEventsUrl();
 
-  const stats = useMemo(() => ({
-    total: initialEvents.length,
-    upcoming: initialEvents.filter(e => e.status === EVENT_STATUS.UPCOMING).length,
-    live: initialEvents.filter(e => e.status === EVENT_STATUS.LIVE).length,
-    past: initialEvents.filter(e => e.status === EVENT_STATUS.PAST).length,
-  }), [initialEvents]);
+  const stats = useMemo(() => calculateEventStats(initialEvents), [initialEvents]);
 
-  const processedEvents = useMemo(() => {
-    let result = [...initialEvents];
-    
-    if (currentStatus !== 'all') result = result.filter(e => e.status === currentStatus);
-    
-    if (searchQuery) {
-      const term = searchQuery.toLowerCase().trim();
-      result = result.filter(e => 
-        e.type.toLowerCase().includes(term) || 
-        e.zone.city.name.toLowerCase().includes(term)
-      );
-    }
-
-    result.sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
-    
-    return result;
-  }, [initialEvents, currentStatus, sortOrder, searchQuery]);
+  const processedEvents = useMemo(() => 
+    getProcessedEvents(initialEvents, { 
+      status: currentStatus, 
+      query: searchQuery, 
+      sort: sortOrder 
+    }), 
+  [initialEvents, currentStatus, searchQuery, sortOrder]);
 
   const paginatedEvents = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -59,24 +41,31 @@ export default function EventsClientView({ initialEvents }: { initialEvents: Eve
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Events Management</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Events Management</h1>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-4" role="region" aria-label="Event statistics">
         <StatCard title="Total Events" value={stats.total} />
         <StatCard title="Upcoming" value={stats.upcoming} />
         <StatCard title="Live" value={stats.live} />
         <StatCard title="Past" value={stats.past} />
       </div>
 
-      <Input 
-        className="max-w-72"
-        placeholder="Search events..." 
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="w-full md:w-72">
+        <label htmlFor="event-search" className="sr-only">
+          Search by event type or city
+        </label>
+        <Input 
+          id="event-search"
+          placeholder="Search events..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          aria-controls="events-table"
+        />
+      </div>
 
       <div className="space-y-4">
         <EventsTable 
+          id="events-table"
           events={paginatedEvents} 
           currentStatus={currentStatus}
           onStatusChange={(v) => updateURL({ status: v, page: '1' })}

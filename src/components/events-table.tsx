@@ -15,6 +15,7 @@ import { Event, EVENT_STATUS } from "@/types/event";
 import Link from "next/link";
 
 interface EventsTableProps {
+  id?: string;
   events: Event[];
   currentStatus: string;
   onStatusChange: (value: string) => void;
@@ -22,9 +23,9 @@ interface EventsTableProps {
   onSortChange: () => void;
 }
 
-export function EventsTable({ events, currentStatus, onStatusChange, sortOrder, onSortChange }: EventsTableProps) {
+export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrder, onSortChange }: EventsTableProps) {
   return (
-    <div className="rounded-md border">
+    <div id={id} className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
