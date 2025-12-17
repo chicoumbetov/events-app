@@ -16,7 +16,7 @@ A high-performance events management dashboard built with Next.js 15, TypeScript
 
 3. Open the app: Navigate to http://localhost:3000. The landing page will guide you to the /events dashboard
 
-Deployed version: https://tl-events-app.vercel.app/
+Live demo: https://tl-events-app.vercel.app/
 
 ## 🛠 Technical Decisions & Architecture
 
