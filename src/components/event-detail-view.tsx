@@ -14,7 +14,8 @@ export function EventDetailView({ event }: EventDetailViewProps) {
   const occupancyRate = Math.round((event.booked / event.capacity) * 100);
 
   return (
-    <div className="container mx-auto py-10 space-y-8">
+    <main className="container mx-auto py-10 space-y-8">
+      {/* A11y: Semantic navigation landmark */}
       <nav aria-label="Breadcrumb">
         <Button variant="ghost" asChild className="pl-0 hover:bg-transparent -ml-2 text-muted-foreground">
           <Link href="/events" className="flex items-center gap-2">
@@ -33,40 +34,43 @@ export function EventDetailView({ event }: EventDetailViewProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
-            <MapPin className="h-5 w-5 text-primary" />
+          <section className="flex items-center gap-3 p-4 rounded-lg bg-muted/50" aria-label="Location">
+            <MapPin className="h-5 w-5 text-primary" aria-hidden="true" />
             <div>
               <p className="text-xs uppercase text-muted-foreground font-semibold">Location</p>
               <p className="font-medium">{event.zone.city.name}, {event.zone.name}</p>
             </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
-            <CalendarIcon className="h-5 w-5 text-primary" />
+          </section>
+
+          <section className="flex items-center gap-3 p-4 rounded-lg bg-muted/50" aria-label="Date">
+            <CalendarIcon className="h-5 w-5 text-primary" aria-hidden="true" />
             <div>
               <p className="text-xs uppercase text-muted-foreground font-semibold">Date</p>
-              <p className="font-medium">{formatDate(event.date)}</p>
+              {/* A11y: Semantic time tag */}
+              <time dateTime={event.date} className="font-medium">{formatDate(event.date)}</time>
             </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-transparent hover:border-primary/20 transition-colors">
-            <Clock className="h-5 w-5 text-primary" />
+          </section>
+
+          <section className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-transparent hover:border-primary/20 transition-colors" aria-label="Time">
+            <Clock className="h-5 w-5 text-primary" aria-hidden="true" />
             <div>
               <p className="text-xs uppercase text-muted-foreground font-semibold">Local Time</p>
               <div className="flex items-center gap-2">
-                <p className="font-medium">{formatTime(event.date)}</p>
+                <time dateTime={event.date} className="font-medium">{formatTime(event.date)}</time>
                 <Badge variant="outline" className="text-[10px] h-4 px-1 font-normal uppercase">
                   {getTimeDistance(event.date)}
                 </Badge>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </header>
 
       <div className="grid gap-6 md:grid-cols-12">
-        <section className="md:col-span-8 rounded-xl border p-8 space-y-8">
+        <section className="md:col-span-8 rounded-xl border p-8 space-y-8" aria-labelledby="occupancy-title">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              <Users className="h-5 w-5" /> Occupancy Metrics
+            <h2 id="occupancy-title" className="text-xl font-bold flex items-center gap-2">
+              <Users className="h-5 w-5" aria-hidden="true" /> Occupancy Metrics
             </h2>
             <span className="text-sm font-medium px-2 py-1 bg-zinc-100 rounded">
               {event.booked} / {event.capacity} seats
@@ -74,7 +78,15 @@ export function EventDetailView({ event }: EventDetailViewProps) {
           </div>
 
           <div className="space-y-4">
-             <div className="w-full bg-zinc-100 rounded-full h-4 overflow-hidden" role="progressbar" aria-valuenow={occupancyRate} aria-valuemin={0} aria-valuemax={100}>
+             {/* A11y: Progress bar connected to title */}
+             <div 
+                className="w-full bg-zinc-100 rounded-full h-4 overflow-hidden" 
+                role="progressbar" 
+                aria-valuenow={occupancyRate} 
+                aria-valuemin={0} 
+                aria-valuemax={100}
+                aria-labelledby="occupancy-title"
+              >
                 <div 
                   className="h-full bg-primary transition-all duration-1000 ease-out" 
                   style={{ width: `${occupancyRate}%` }} 
@@ -87,29 +99,29 @@ export function EventDetailView({ event }: EventDetailViewProps) {
         </section>
 
         <aside className="md:col-span-4 space-y-6">
-          <div className="rounded-xl border p-6 bg-zinc-50">
-            <h3 className="font-bold flex items-center gap-2 mb-4">
-              <Globe className="h-4 w-4" /> Regional Data
+          <section className="rounded-xl border p-6 bg-zinc-50" aria-labelledby="regional-title">
+            <h3 id="regional-title" className="font-bold flex items-center gap-2 mb-4">
+              <Globe className="h-4 w-4" aria-hidden="true" /> Regional Data
             </h3>
-            <div className="space-y-3 text-sm">
+            <dl className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Country</span>
-                <span className="font-medium">{event.zone.city.country.name}</span>
+                <dt className="text-muted-foreground">Country</dt>
+                <dd className="font-medium">{event.zone.city.country.name}</dd>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">City ID</span>
-                <span className="font-medium">{event.zone.city.id}</span>
+                <dt className="text-muted-foreground">City ID</dt>
+                <dd className="font-medium">{event.zone.city.id}</dd>
               </div>
               <div className="flex justify-between border-t pt-3">
-                <span className="text-muted-foreground">Data Integrity</span>
-                <span className="text-green-600 flex items-center gap-1 font-medium">
+                <dt className="text-muted-foreground">Data Integrity</dt>
+                <dd className="text-green-600 flex items-center gap-1 font-medium">
                   <ShieldCheck className="h-3 w-3" /> Verified
-                </span>
+                </dd>
               </div>
-            </div>
-          </div>
+            </dl>
+          </section>
         </aside>
       </div>
-    </div>
+    </main>
   );
 }
