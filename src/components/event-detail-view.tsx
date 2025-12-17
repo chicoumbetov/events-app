@@ -14,7 +14,7 @@ export function EventDetailView({ event }: EventDetailViewProps) {
   const occupancyRate = Math.round((event.booked / event.capacity) * 100);
 
   return (
-    <main className="container mx-auto py-10 space-y-8">
+    <main className="container mx-auto py-10 space-y-8 animate-in fade-in duration-500">
       {/* A11y: Semantic navigation landmark */}
       <nav aria-label="Breadcrumb">
         <Button variant="ghost" asChild className="pl-0 hover:bg-transparent -ml-2 text-muted-foreground">
