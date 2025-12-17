@@ -1,5 +1,5 @@
 import { getEvents } from "@/lib/api";
-import EventsClientView from "./events-client-view";
+import EventsClientView from "../../components/events-client-view";
 
 export default async function EventsPage() {
   const events = await getEvents();
