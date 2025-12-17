@@ -1,4 +1,4 @@
-import { Event, EVENT_STATUS } from "@/types/event";
+import { Event, EVENT_STATUS } from "../types/event";
 
 /**
  * Calculates dashboard statistics
