@@ -72,8 +72,10 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
           </TableRow>
         ) : (
           events.map((event) => (
-            <TableRow key={event.id}>
-              <TableCell className="font-medium">{event.type}</TableCell>
+            <TableRow key={event.id} className="hover:bg-brand-primary/5 transition-colors group">
+              <TableCell className="font-medium group-hover:text-brand-primary transition-colors">
+                {event.type}
+              </TableCell>
               <TableCell>{`${event.zone.city.name} (${event.zone.name})`}</TableCell>
               <TableCell>{formatDate(event.date)}</TableCell>
               <TableCell>
@@ -83,7 +85,12 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
               </TableCell>
               <TableCell>{`${event.booked} / ${event.capacity}`}</TableCell>
               <TableCell className="text-right">
-                <Button variant="outline" size="sm" asChild>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  asChild 
+                  className="bg-brand-primary hover:bg-brand-secondary text-white shadow-sm"
+                >
                   <Link href={`/events/${event.id}`}>View</Link>
                 </Button>
               </TableCell>

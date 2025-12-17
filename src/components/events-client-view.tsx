@@ -7,19 +7,20 @@ import { Input } from "@/components/ui/input";
 import { useEventsUrl } from "@/hooks/use-events-url";
 import { calculateEventStats, getProcessedEvents } from "@/lib/event-logic";
 import { Event } from '@/types/event';
-import { Activity, Calendar, History, Layers, Search } from "lucide-react";
-import { useMemo } from 'react';
+import { Activity, Calendar, History, Layers, Loader2, Search } from "lucide-react";
+import { useMemo, useTransition } from 'react';
 
 const ITEMS_PER_PAGE = 5;
 
 export default function EventsClientView({ initialEvents }: { initialEvents: Event[] }) {
+  const [isPending, startTransition] = useTransition();
   const {
     currentStatus,
     sortOrder,
     currentPage,
-    searchQuery,
     searchTerm,
     setSearchTerm,
+    searchQuery,
     updateURL
   } = useEventsUrl();
 
@@ -41,38 +42,48 @@ export default function EventsClientView({ initialEvents }: { initialEvents: Eve
   const totalPages = Math.ceil(processedEvents.length / ITEMS_PER_PAGE);
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold tracking-tight">Events Management</h1>
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-black tracking-tight text-foreground uppercase">Events</h1>
+          <div className="flex items-center gap-2">
+            <p className="text-muted-foreground font-medium">
+              Showing {paginatedEvents.length} of {processedEvents.length} events
+            </p>
+            {isPending && <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />}
+          </div>
+        </div>
 
-      <div className="grid gap-4 md:grid-cols-4" role="region" aria-label="Event statistics">
-      <StatCard title="Total Events" value={stats.total} icon={Layers} />
-        <StatCard title="Upcoming" value={stats.upcoming} icon={Calendar} iconColor="text-blue-500" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-primary" />
+          <Input 
+            id="event-search"
+            className="pl-10 border-none bg-card shadow-sm focus-visible:ring-brand-primary h-11"
+            placeholder="Search events or cities..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <StatCard title="Total Events" value={stats.total} icon={Layers} />
+        <StatCard title="Upcoming" value={stats.upcoming} icon={Calendar} iconColor="text-brand-primary" />
         <StatCard title="Live" value={stats.live} icon={Activity} iconColor="text-green-500" />
         <StatCard title="Past" value={stats.past} icon={History} iconColor="text-gray-500" />
       </div>
 
-      <div className="relative w-full md:w-72">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <label htmlFor="event-search" className="sr-only">Search by event type or city</label>
-        <Input 
-          id="event-search"
-          className="pl-9"
-          placeholder="Search events..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          aria-controls="events-table"
-        />
-      </div>
-
       <div className="space-y-4">
-        <EventsTable 
-          id="events-table"
-          events={paginatedEvents} 
-          currentStatus={currentStatus}
-          onStatusChange={(v) => updateURL({ status: v, page: '1' })}
-          sortOrder={sortOrder}
-          onSortChange={() => updateURL({ sort: sortOrder === 'asc' ? 'desc' : 'asc' })}
-        />
+        <div className={`bg-card rounded-xl shadow-sm border border-border/50 overflow-hidden transition-opacity duration-200 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
+          <EventsTable 
+            id="events-table"
+            events={paginatedEvents} 
+            currentStatus={currentStatus}
+            onStatusChange={(v) => startTransition(() => updateURL({ status: v, page: '1' }))}
+            sortOrder={sortOrder}
+            onSortChange={() => startTransition(() => updateURL({ sort: sortOrder === 'asc' ? 'desc' : 'asc' }))}
+          />
+        </div>
 
         <EventsPagination 
           currentPage={currentPage}
