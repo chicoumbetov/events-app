@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Timeleft Events Back-Office MVP
 
-## Getting Started
+A high-performance events management dashboard built with Next.js 15, TypeScript, and Shadcn UI.
 
-First, run the development server:
+## 🚀 Getting Started
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Install dependencies:**
+  ```bash
+  npm install
+  ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Run the development server:**
+  ```bash
+  npm run dev
+  ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Open the app: Navigate to http://localhost:3000. The landing page will guide you to the /events dashboard
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deployed version: https://tl-events-app.vercel.app/
 
-## Learn More
+## 🛠 Technical Decisions & Architecture
 
-To learn more about Next.js, take a look at the following resources:
+1. Hybrid Server/Client Architecture
+I implemented a Server-First approach for data fetching.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Server Component (page.tsx): Fetches data directly from the API. This improves performance by reducing client-side waterfalls and eliminating initial "loading flickers."
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Client Component (EventsClientView): Handles all interactive state (filtering, sorting, searching) once the initial data is provided.
 
-## Deploy on Vercel
+2. Deep URL Synchronization (SSOT)
+Following the "URL sync" requirement, the URL acts as the Single Source of Truth.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Filters, sorting, search queries, and pagination state are all reflected in the URL search parameters.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Users can refresh the page or share a specific filtered view without losing context.
+
+- Used a Custom Hook (useEventsUrl) to encapsulate this logic, ensuring high code reusability and a cleaner UI layer.
+
+3. Search & Performance
+- Debounced Search: Implemented a 300ms debounce on the search input to prevent excessive URL updates and re-renders while typing.
+
+- Fuzzy Search: The search filters across multiple fields simultaneously (Event Type, City, and Zone) to improve operational efficiency.
+
+4. Robust UX Patterns
+- Loading & Error States: Utilized Next.js loading.tsx (with Skeleton pulse animation) and error.tsx (with a recovery reset) to handle the data fetching lifecycle gracefully.
+
+- Pagination Reset: Changing a filter automatically resets the user to Page 1 to prevent "empty view" bugs.
+
+## 📁 Project Structure
+
+- src/app/events/: Contains the primary route, including server-side logic and error boundaries.
+
+- src/components/: Reusable UI components (StatCard, Pagination, EventsTable).
+
+- src/hooks/: Custom logic for URL state management.
+
+- src/lib/: API service layer and utility functions (formatting).
+
+- src/types/: Centralized TypeScript interfaces.
+
+## 📝 Trade-offs & Future Improvements
+
+- Client-side Processing: For this MVP, sorting/filtering is done client-side since the dataset is manageable. For datasets >1000 items, I would transition this logic to Server Actions or API query parameters.
+
+- Testing: Given the 2-hour constraint, the focus was on architecture and UX. Future iterations would include Vitest/Playground tests for the filtering logic.
