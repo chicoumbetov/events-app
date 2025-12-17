@@ -29,10 +29,11 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Type</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead 
-              className="cursor-pointer hover:text-foreground select-none" 
+          <TableHead scope="col">Type</TableHead>
+          <TableHead scope="col">Location</TableHead>
+          <TableHead 
+            scope="col"
+            className="cursor-pointer hover:text-foreground"
               onClick={onSortChange}
               role="button"
               tabIndex={0}
@@ -47,7 +48,7 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
               <Select value={currentStatus} onValueChange={onStatusChange}>
                 <SelectTrigger
                   aria-labelledby="status-select-label"
-                  className="h-8 border-none bg-transparent p-0 focus:ring-0 shadow-none font-bold"
+                  className="h-8 border-none bg-transparent p-0 focus:ring-2 focus:ring-brand-primary/50 shadow-none font-bold transition-all"
                 >
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -73,7 +74,7 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
         ) : (
           events.map((event) => (
             <TableRow key={event.id} className="hover:bg-brand-primary/5 transition-colors group">
-              <TableCell className="font-medium group-hover:text-brand-primary transition-colors">
+              <TableCell scope="row" className="font-medium group-hover:text-brand-primary">
                 {event.type}
               </TableCell>
               <TableCell>{`${event.zone.city.name} (${event.zone.name})`}</TableCell>
@@ -85,14 +86,19 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
               </TableCell>
               <TableCell>{`${event.booked} / ${event.capacity}`}</TableCell>
               <TableCell className="text-right">
-                <Button 
-                  variant="default" 
-                  size="sm" 
-                  asChild 
-                  className="bg-brand-primary hover:bg-brand-secondary text-white shadow-sm"
+              <Button 
+                variant="default" 
+                size="sm" 
+                asChild 
+                className="bg-brand-primary hover:bg-brand-secondary text-white shadow-sm"
+              >
+                <Link
+                  href={`/events/${event.id}`}
+                  aria-label={`View details for ${event.type} in ${event.zone.city.name}`}
                 >
-                  <Link href={`/events/${event.id}`}>View</Link>
-                </Button>
+                  View
+                </Link>
+              </Button>
               </TableCell>
             </TableRow>
           ))

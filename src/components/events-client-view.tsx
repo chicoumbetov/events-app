@@ -47,9 +47,6 @@ export default function EventsClientView({ initialEvents }: { initialEvents: Eve
         <div>
           <h1 className="text-4xl font-black tracking-tight text-foreground uppercase">Events</h1>
           <div className="flex items-center gap-2">
-            <p className="text-muted-foreground font-medium">
-              Showing {paginatedEvents.length} of {processedEvents.length} events
-            </p>
             {isPending && <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />}
           </div>
         </div>
