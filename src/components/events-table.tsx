@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getStatusColor } from "@/lib/event-logic";
 import { formatDate } from "@/lib/utils";
 import { Event, EVENT_STATUS } from "@/types/event";
 import Link from "next/link";
@@ -22,15 +23,6 @@ interface EventsTableProps {
 }
 
 export function EventsTable({ events, currentStatus, onStatusChange, sortOrder, onSortChange }: EventsTableProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case EVENT_STATUS.LIVE: return "bg-green-500 hover:bg-green-600";
-      case EVENT_STATUS.UPCOMING: return "bg-blue-500 hover:bg-blue-600";
-      case EVENT_STATUS.PAST: return "bg-gray-500 hover:bg-gray-600";
-      default: return "bg-slate-500";
-    }
-  };
-
   return (
     <div className="rounded-md border">
       <Table>
@@ -38,7 +30,11 @@ export function EventsTable({ events, currentStatus, onStatusChange, sortOrder, 
           <TableRow>
             <TableHead>Type</TableHead>
             <TableHead>Location</TableHead>
-            <TableHead className="cursor-pointer hover:text-foreground" onClick={onSortChange}>
+            <TableHead 
+              className="cursor-pointer hover:text-foreground select-none" 
+              onClick={onSortChange}
+              aria-label={`Sort by date ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
+            >
               Date {sortOrder === 'asc' ? '↑' : '↓'}
             </TableHead>
             <TableHead className="w-[180px]">
