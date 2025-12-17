@@ -2,6 +2,14 @@
 
 A high-performance events management dashboard built with Next.js 15, TypeScript, and Shadcn UI.
 
+## 🛠 Setup & Configuration
+
+**Environment Variables:**
+  Copy the example environment file and ensure `API_URL` is set:
+  ```bash
+  cp .env.example .env
+  ```
+
 ## 🚀 Getting Started
 
 1. **Install dependencies:**
