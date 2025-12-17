@@ -11,9 +11,10 @@ describe('utils', () => {
   });
 
   describe('getTimeDistance', () => {
-    it('returns "in 2 days" for future dates', () => {
-      const futureDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
-      expect(getTimeDistance(futureDate)).toBe('in 2 days');
+    it('returns "tomorrow" or "in 2 days" for future dates', () => {
+      // Use a 3-day offset to avoid "tomorrow" logic in 'auto' mode
+      const futureDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+      expect(getTimeDistance(futureDate)).toBe('in 3 days');
     });
 
     it('returns "Already started" for past dates', () => {
