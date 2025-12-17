@@ -36,6 +36,7 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
               onClick={onSortChange}
               role="button"
               tabIndex={0}
+              aria-sort={sortOrder === 'asc' ? 'ascending' : 'descending'}
               aria-label={`Sort by date ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
               onKeyDown={(e) => e.key === 'Enter' && onSortChange()}
             >
