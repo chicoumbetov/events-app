@@ -1,5 +1,6 @@
 'use client';
 
+import { EventsTable } from "@/components/events-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Event, EVENT_STATUS } from '@/types/event';
 import { useEffect, useMemo, useState } from 'react';
@@ -39,7 +40,7 @@ export default function EventsPage() {
         <StatCard title="Past" value={stats.past} />
       </div>
 
-      {/* Table */}
+      <EventsTable events={events} />
     </div>
   );
 }
