@@ -1,7 +1,13 @@
 import { Event } from "@/types/event";
 
 export async function getEvents(): Promise<Event[]> {
-  const res = await fetch('https://cdn.timeleft.com/frontend-tech-test/events.json', {
+  const url = process.env.API_URL;
+
+  if (!url) {
+    throw new Error('Missing API_URL environment variable');
+  }
+
+  const res = await fetch(url, {
     next: { revalidate: 3600 } 
   });
 
