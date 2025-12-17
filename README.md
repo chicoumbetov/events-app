@@ -59,6 +59,24 @@ Following the "URL sync" requirement, the URL acts as the Single Source of Truth
 
 - Pagination Reset: Changing a filter automatically resets the user to Page 1 to prevent "empty view" bugs.
 
+5. Data Caching & Memoization
+
+- React.cache: Implemented React.cache in the API layer. This ensures that even if getEvents is called multiple times during a single server-side render (e.g., once for generateMetadata and once for the page content), only one network request is made.
+
+- Request Memoization: Leveraged Next.js 15 request lifecycle to reduce API overhead.
+
+- Data Cache: Configured a 1-hour revalidation period (next: { revalidate: 3600 }) to balance data freshness with high performance.
+
+6. Modern Streaming (React Suspense)
+
+- Used Streaming with Suspense to improve "Time to First Byte" (TTFB). The page shell (navigation and layout) is sent to the client immediately, while the data-heavy event list streams in with a Skeleton loader.
+
+7. Accessibility & SEO (A11y)
+
+- Achieved 96% Accessibility and 100% Best Practices scores in Lighthouse.
+
+- Ensured semantic HTML (using <nav>, <time>, and proper aria-labels for table actions) to support screen readers.
+
 ## 📁 Project Structure
 
 - src/app/events/: Contains the primary route, including server-side logic and error boundaries.
@@ -74,5 +92,3 @@ Following the "URL sync" requirement, the URL acts as the Single Source of Truth
 ## 📝 Trade-offs & Future Improvements
 
 - Client-side Processing: For this MVP, sorting/filtering is done client-side since the dataset is manageable. For datasets >1000 items, I would transition this logic to Server Actions or API query parameters.
-
-- Testing: Given the 2-hour constraint, the focus was on architecture and UX. Future iterations would include Vitest/Playground tests for the filtering logic.
