@@ -34,13 +34,20 @@ export function EventsTable({ id, events, currentStatus, onStatusChange, sortOrd
             <TableHead 
               className="cursor-pointer hover:text-foreground select-none" 
               onClick={onSortChange}
+              role="button"
+              tabIndex={0}
               aria-label={`Sort by date ${sortOrder === 'asc' ? 'descending' : 'ascending'}`}
+              onKeyDown={(e) => e.key === 'Enter' && onSortChange()}
             >
               Date {sortOrder === 'asc' ? '↑' : '↓'}
             </TableHead>
             <TableHead className="w-[180px]">
+              <label id="status-select-label" className="sr-only">Filter by status</label>
               <Select value={currentStatus} onValueChange={onStatusChange}>
-                <SelectTrigger className="h-8 border-none bg-transparent p-0 focus:ring-0 shadow-none font-bold">
+                <SelectTrigger
+                  aria-labelledby="status-select-label"
+                  className="h-8 border-none bg-transparent p-0 focus:ring-0 shadow-none font-bold"
+                >
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
