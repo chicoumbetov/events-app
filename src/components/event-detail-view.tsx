@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon, CheckCircle2, ChevronLeft, MapPin, Ticket, Users } from "lucide-react";
+import { Calendar as CalendarIcon, ChevronLeft, Clock, Globe, MapPin, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { getStatusColor } from "../lib/event-logic";
 import { formatDate } from "../lib/utils";
@@ -13,93 +13,100 @@ interface EventDetailViewProps {
 export function EventDetailView({ event }: EventDetailViewProps) {
   const occupancyRate = Math.round((event.booked / event.capacity) * 100);
 
+  const eventTime = new Date(event.date).toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
   return (
     <div className="container mx-auto py-10 space-y-8">
-      {/* Navigation & Header */}
-      <nav aria-label="Back">
-        <Button variant="ghost" asChild className="pl-0 hover:bg-transparent -ml-2">
+      <nav aria-label="Breadcrumb">
+        <Button variant="ghost" asChild className="pl-0 hover:bg-transparent -ml-2 text-muted-foreground">
           <Link href="/events" className="flex items-center gap-2">
             <ChevronLeft className="h-4 w-4" />
-            Back to Events Dashboard
+            Events / {event.zone.city.name} / <span className="text-foreground">{event.id}</span>
           </Link>
         </Button>
       </nav>
 
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold tracking-tight">{event.type}</h1>
-            <Badge className={getStatusColor(event.status)} aria-label={`Event status: ${event.status}`}>
-              {event.status}
-            </Badge>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-muted-foreground">
-            <div className="flex items-center gap-1.5" aria-label="Location">
-              <MapPin className="h-4 w-4 text-primary" />
-              {event.zone.city.name} — {event.zone.name}
-            </div>
-            <div className="flex items-center gap-1.5" aria-label="Date">
-              <CalendarIcon className="h-4 w-4 text-primary" />
-              {formatDate(event.date)}
-            </div>
-          </div>
+      <header className="space-y-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-5xl font-black uppercase tracking-tighter">{event.type}</h1>
+          <Badge className={`${getStatusColor(event.status)} uppercase font-bold`}>
+            {event.status}
+          </Badge>
         </div>
-        
-        <div className="flex gap-3">
-          <Button variant="outline">Edit Event</Button>
-          <Button>Manage Attendees</Button>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+            <MapPin className="h-5 w-5 text-primary" />
+            <div>
+              <p className="text-xs uppercase text-muted-foreground font-semibold">Location</p>
+              <p className="font-medium">{event.zone.city.name}, {event.zone.name}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+            <CalendarIcon className="h-5 w-5 text-primary" />
+            <div>
+              <p className="text-xs uppercase text-muted-foreground font-semibold">Date</p>
+              <p className="font-medium">{formatDate(event.date)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+            <Clock className="h-5 w-5 text-primary" />
+            <div>
+              <p className="text-xs uppercase text-muted-foreground font-semibold">Local Time</p>
+              <p className="font-medium">{eventTime} (UTC)</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Main Content Grid */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Occupancy Card (PM Focus) */}
-        <section className="md:col-span-2 rounded-xl border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-6 flex items-center gap-2">
-            <Users className="h-5 w-5" /> Occupancy Overview
-          </h2>
-          <div className="space-y-6">
-            <div className="flex justify-between items-end">
-              <div>
-                <p className="text-3xl font-bold">{event.booked}</p>
-                <p className="text-sm text-muted-foreground text-nowrap">Total Bookings</p>
+      <div className="grid gap-6 md:grid-cols-12">
+        <section className="md:col-span-8 rounded-xl border p-8 space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Users className="h-5 w-5" /> Occupancy Metrics
+            </h2>
+            <span className="text-sm font-medium px-2 py-1 bg-zinc-100 rounded">
+              {event.booked} / {event.capacity} seats
+            </span>
+          </div>
+
+          <div className="space-y-4">
+             <div className="w-full bg-zinc-100 rounded-full h-4 overflow-hidden" role="progressbar" aria-valuenow={occupancyRate} aria-valuemin={0} aria-valuemax={100}>
+                <div 
+                  className="h-full bg-primary transition-all duration-1000 ease-out" 
+                  style={{ width: `${occupancyRate}%` }} 
+                />
               </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold">{event.capacity}</p>
-                <p className="text-sm text-muted-foreground text-nowrap">Total Capacity</p>
-              </div>
-            </div>
-            
-            <div className="w-full bg-muted rounded-full h-4 overflow-hidden" role="progressbar" aria-valuenow={occupancyRate} aria-valuemin={0} aria-valuemax={100}>
-              <div 
-                className={`h-full transition-all ${occupancyRate > 90 ? 'bg-orange-500' : 'bg-primary'}`} 
-                style={{ width: `${occupancyRate}%` }} 
-              />
-            </div>
-            <p className="text-sm font-medium text-center italic">
-              This event is {occupancyRate}% full.
-            </p>
+              <p className="text-sm text-center text-muted-foreground">
+                Current fill rate: <span className="text-foreground font-bold">{occupancyRate}%</span>
+              </p>
           </div>
         </section>
 
-        {/* Quick Actions/Info Card */}
-        <aside className="space-y-6">
-          <div className="rounded-xl border bg-card p-6 shadow-sm">
-            <h3 className="font-semibold mb-4 flex items-center gap-2 text-nowrap">
-              <Ticket className="h-4 w-4" /> Management Details
+        <aside className="md:col-span-4 space-y-6">
+          <div className="rounded-xl border p-6 bg-zinc-50">
+            <h3 className="font-bold flex items-center gap-2 mb-4">
+              <Globe className="h-4 w-4" /> Regional Data
             </h3>
-            <ul className="space-y-4 text-sm" role="list">
-              <li className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground">Event ID</span>
-                <span className="font-mono">{event.id}</span>
-              </li>
-              <li className="flex justify-between border-b pb-2">
-                <span className="text-muted-foreground text-nowrap">System Sync</span>
-                <span className="flex items-center gap-1 text-green-600">
-                  <CheckCircle2 className="h-3 w-3" />Active
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Country</span>
+                <span className="font-medium">{event.zone.city.country.name}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">City ID</span>
+                <span className="font-medium">{event.zone.city.id}</span>
+              </div>
+              <div className="flex justify-between border-t pt-3">
+                <span className="text-muted-foreground">Data Integrity</span>
+                <span className="text-green-600 flex items-center gap-1 font-medium">
+                  <ShieldCheck className="h-3 w-3" /> Verified
                 </span>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </aside>
       </div>
