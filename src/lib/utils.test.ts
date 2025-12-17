@@ -1,16 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { formatDate } from './utils';
+import { formatTime, getTimeDistance } from './utils';
 
 describe('utils', () => {
-  describe('formatDate', () => {
-    it('formats ISO strings to en-GB format', () => {
-      const date = '2025-12-25T20:00:00Z';
-      expect(formatDate(date)).toBe('25 Dec 2025');
+  describe('formatTime', () => {
+    it('extracts 24h time from ISO string in UTC', () => {
+      const date = '2025-12-25T20:30:00Z';
+      // This will now pass regardless of local system timezone
+      expect(formatTime(date)).toBe('20:30');
+    });
+  });
+
+  describe('getTimeDistance', () => {
+    it('returns "in 2 days" for future dates', () => {
+      const futureDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
+      expect(getTimeDistance(futureDate)).toBe('in 2 days');
     });
 
-    it('handles empty or null inputs gracefully', () => {
-      // @ts-ignore
-      expect(formatDate(null)).toBe('N/A');
+    it('returns "Already started" for past dates', () => {
+      const pastDate = new Date(Date.now() - 10000).toISOString();
+      expect(getTimeDistance(pastDate)).toBe('Already started');
     });
   });
 });
