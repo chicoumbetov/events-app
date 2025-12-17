@@ -1,7 +1,7 @@
 import { Calendar as CalendarIcon, ChevronLeft, Clock, Globe, MapPin, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { getStatusColor } from "../lib/event-logic";
-import { formatDate } from "../lib/utils";
+import { formatDate, formatTime, getTimeDistance } from "../lib/utils";
 import { Event } from "../types/event";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -12,11 +12,6 @@ interface EventDetailViewProps {
 
 export function EventDetailView({ event }: EventDetailViewProps) {
   const occupancyRate = Math.round((event.booked / event.capacity) * 100);
-
-  const eventTime = new Date(event.date).toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 
   return (
     <div className="container mx-auto py-10 space-y-8">
@@ -52,11 +47,16 @@ export function EventDetailView({ event }: EventDetailViewProps) {
               <p className="font-medium">{formatDate(event.date)}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50">
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-transparent hover:border-primary/20 transition-colors">
             <Clock className="h-5 w-5 text-primary" />
             <div>
               <p className="text-xs uppercase text-muted-foreground font-semibold">Local Time</p>
-              <p className="font-medium">{eventTime} (UTC)</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium">{formatTime(event.date)}</p>
+                <Badge variant="outline" className="text-[10px] h-4 px-1 font-normal uppercase">
+                  {getTimeDistance(event.date)}
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
