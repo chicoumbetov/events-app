@@ -2,7 +2,6 @@
 
 import { EventsTable } from "@/components/events-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Event, EVENT_STATUS } from '@/types/event';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -53,33 +52,21 @@ export default function EventsPage() {
 
   return (
     <div className="container mx-auto py-10 space-y-8">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Events Management</h1>
+    <h1 className="text-3xl font-bold">Events Management</h1>
 
-        <div className="w-[200px]">
-          <Select value={currentStatus} onValueChange={handleStatusChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value={EVENT_STATUS.UPCOMING}>Upcoming</SelectItem>
-              <SelectItem value={EVENT_STATUS.LIVE}>Live</SelectItem>
-              <SelectItem value={EVENT_STATUS.PAST}>Past</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-4">
-        <StatCard title="Total Events" value={stats.total} />
-        <StatCard title="Upcoming" value={stats.upcoming} />
-        <StatCard title="Live" value={stats.live} />
-        <StatCard title="Past" value={stats.past} />
-      </div>
-
-      <EventsTable events={filteredEvents} />
+    <div className="grid gap-4 md:grid-cols-4">
+      <StatCard title="Total Events" value={stats.total} />
+      <StatCard title="Upcoming" value={stats.upcoming} />
+      <StatCard title="Live" value={stats.live} />
+      <StatCard title="Past" value={stats.past} />
     </div>
+
+    <EventsTable 
+      events={filteredEvents} 
+      currentStatus={currentStatus}
+      onStatusChange={handleStatusChange}
+    />
+  </div>
   );
 }
 

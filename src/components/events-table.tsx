@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -14,9 +15,11 @@ import Link from "next/link";
 
 interface EventsTableProps {
   events: Event[];
+  currentStatus: string;
+  onStatusChange: (value: string) => void;
 }
 
-export function EventsTable({ events }: EventsTableProps) {
+export function EventsTable({ events, currentStatus, onStatusChange }: EventsTableProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case EVENT_STATUS.LIVE: return "bg-green-500 hover:bg-green-600";
@@ -34,7 +37,19 @@ export function EventsTable({ events }: EventsTableProps) {
             <TableHead>Type</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="w-[180px]">
+              <Select value={currentStatus} onValueChange={onStatusChange}>
+                <SelectTrigger className="h-8 border-none bg-transparent p-0 focus:ring-0 shadow-none font-bold">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value={EVENT_STATUS.UPCOMING}>Upcoming</SelectItem>
+                  <SelectItem value={EVENT_STATUS.LIVE}>Live</SelectItem>
+                  <SelectItem value={EVENT_STATUS.PAST}>Past</SelectItem>
+                </SelectContent>
+              </Select>
+            </TableHead>
             <TableHead>Capacity</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
