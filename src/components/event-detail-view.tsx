@@ -80,18 +80,18 @@ export function EventDetailView({ event }: EventDetailViewProps) {
           <div className="space-y-4">
              {/* A11y: Progress bar connected to title */}
              <div 
-                className="w-full bg-zinc-100 rounded-full h-4 overflow-hidden" 
-                role="progressbar" 
-                aria-valuenow={occupancyRate} 
-                aria-valuemin={0} 
-                aria-valuemax={100}
-                aria-labelledby="occupancy-title"
-              >
-                <div 
-                  className="h-full bg-primary transition-all duration-1000 ease-out" 
-                  style={{ width: `${occupancyRate}%` }} 
-                />
-              </div>
+              className="w-full bg-zinc-200 rounded-full h-4 overflow-hidden"
+              role="progressbar" 
+              aria-valuenow={occupancyRate} 
+              aria-valuemin={0} 
+              aria-valuemax={100}
+              aria-labelledby="occupancy-title"
+            >
+              <div 
+                className="h-full bg-primary transition-all duration-1000"
+                style={{ width: `${occupancyRate}%` }} 
+              />
+            </div>
               <p className="text-sm text-center text-muted-foreground">
                 Current fill rate: <span className="text-foreground font-bold">{occupancyRate}%</span>
               </p>
@@ -114,7 +114,7 @@ export function EventDetailView({ event }: EventDetailViewProps) {
               </div>
               <div className="flex justify-between border-t pt-3">
                 <dt className="text-muted-foreground">Data Integrity</dt>
-                <dd className="text-green-600 flex items-center gap-1 font-medium">
+                <dd className="text-green-700 flex items-center gap-1 font-bold">
                   <ShieldCheck className="h-3 w-3" /> Verified
                 </dd>
               </div>

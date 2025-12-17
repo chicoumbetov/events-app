@@ -1,36 +1,23 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { EventDetailView } from "../../../components/event-detail-view";
-import { getEvents } from "../../../lib/api";
+import { getEventById } from "../../../lib/api";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps) {
-  const { id } = await params;
-  const events = await getEvents();
-  const event = events.find(e => e.id === id);
-  
-  if (!event) return { title: 'Event Not Found' };
-
-  return {
-    title: `${event.type} | ${event.zone.city.name} - Timeleft`,
-    description: `Join our ${event.type} event in ${event.zone.city.name} on ${event.date}. Secure your seat now!`,
-    openGraph: {
-      title: `${event.type} in ${event.zone.city.name}`,
-      description: `Operational details for event ${id}`,
-    }
-  };
-}
-
 export default async function EventDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const events = await getEvents();
-  const event = events.find(e => e.id === id);
+  const event = await getEventById(id);
 
-  if (!event) {
-    notFound();
-  }
+  if (!event) notFound();
 
-  return <EventDetailView event={event} />;
+  return (
+    <main className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8">
+      <Suspense fallback={<div className="h-96 w-full animate-pulse bg-muted rounded-xl" />}>
+        <EventDetailView event={event} />
+      </Suspense>
+    </main>
+  );
 }
