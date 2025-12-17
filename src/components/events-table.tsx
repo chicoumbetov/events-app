@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatDate } from "@/lib/utils";
 import { Event, EVENT_STATUS } from "@/types/event";
 import Link from "next/link";
 
@@ -43,7 +44,7 @@ export function EventsTable({ events }: EventsTableProps) {
             <TableRow key={event.id}>
               <TableCell className="font-medium">{event.type}</TableCell>
               <TableCell>{`${event.zone.city.name} (${event.zone.name})`}</TableCell>
-              <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
+              <TableCell>{formatDate(event.date)}</TableCell>
               <TableCell>
                 <Badge className={getStatusColor(event.status)}>
                   {event.status}
