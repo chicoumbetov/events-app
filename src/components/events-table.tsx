@@ -59,7 +59,14 @@ export function EventsTable({ events, currentStatus, onStatusChange, sortOrder, 
           </TableRow>
         </TableHeader>
         <TableBody>
-          {events.map((event) => (
+        {events.length === 0 ? (
+          <TableRow>
+            <TableCell colSpan={6} className="h-24 text-center">
+              No events found matching your criteria.
+            </TableCell>
+          </TableRow>
+        ) : (
+          events.map((event) => (
             <TableRow key={event.id}>
               <TableCell className="font-medium">{event.type}</TableCell>
               <TableCell>{`${event.zone.city.name} (${event.zone.name})`}</TableCell>
@@ -76,7 +83,8 @@ export function EventsTable({ events, currentStatus, onStatusChange, sortOrder, 
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
+          ))
+        )}
         </TableBody>
       </Table>
     </div>
