@@ -9,43 +9,41 @@ interface EventsPaginationProps {
   onPageChange: (page: number) => void;
 }
 
-export function EventsPagination({
-  currentPage,
-  totalPages,
-  totalFiltered,
-  showingCount,
-  onPageChange,
-}: EventsPaginationProps) {
+export function EventsPagination({ currentPage, totalPages, totalFiltered, showingCount, onPageChange }: EventsPaginationProps) {
   return (
-    <div className="flex items-center justify-between py-2" aria-label="Pagination Control">
-      <p className="text-sm text-muted-foreground">
-        Showing <strong>{showingCount}</strong> of <strong>{totalFiltered}</strong> results
-      </p>
-      <div className="flex items-center space-x-2">
-        <div className="text-sm text-muted-foreground mr-4">
-          Page {currentPage} of {Math.max(totalPages, 1)}
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage <= 1}
-          aria-label="Go to previous page"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" />
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage >= totalPages}
-          aria-label="Go to next page"
-        >
-          Next
-          <ChevronRight className="h-4 w-4 ml-1" />
-        </Button>
+    <nav 
+      className="flex items-center justify-between py-2 border-t mt-4" 
+      aria-label="Pagination Navigation"
+    >
+      <div className="text-sm text-muted-foreground">
+        Showing <span className="font-semibold text-foreground">{showingCount}</span> of <span className="font-semibold text-foreground">{totalFiltered}</span> results
       </div>
-    </div>
+      
+      <div className="flex items-center gap-6">
+        <span className="text-sm font-medium">
+          Page {currentPage} of {Math.max(totalPages, 1)}
+        </span>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="hover:border-brand-primary hover:text-brand-primary"
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+            className="hover:border-brand-primary hover:text-brand-primary"
+          >
+            Next <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      </div>
+    </nav>
   );
 }

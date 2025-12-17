@@ -11,8 +11,15 @@ export async function generateMetadata({ params }: PageProps) {
   const events = await getEvents();
   const event = events.find(e => e.id === id);
   
+  if (!event) return { title: 'Event Not Found' };
+
   return {
-    title: event ? `${event.type} in ${event.zone.city.name}` : 'Event Not Found',
+    title: `${event.type} | ${event.zone.city.name} - Timeleft`,
+    description: `Join our ${event.type} event in ${event.zone.city.name} on ${event.date}. Secure your seat now!`,
+    openGraph: {
+      title: `${event.type} in ${event.zone.city.name}`,
+      description: `Operational details for event ${id}`,
+    }
   };
 }
 

@@ -19,6 +19,9 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tl-events-app.vercel.app'),
+  alternates: {
+    canonical: '/', // Tells Google this is the main version
+  },
   title: {
     template: '%s | Timeleft Admin',
     default: 'Events Dashboard | Timeleft Admin',
@@ -33,7 +36,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground px-4 md:px-0`}>
         {children}
       </body>
     </html>
