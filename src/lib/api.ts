@@ -1,16 +1,25 @@
-import { Event } from "@/types/event";
+import { Event } from "../types/event";
 
 export async function getEvents(): Promise<Event[]> {
   const url = process.env.API_URL;
 
   if (!url) {
-    throw new Error('Missing API_URL environment variable');
+    console.error('Missing API_URL environment variable');
+    return []; // Return empty array to prevent total page crash
   }
 
-  const res = await fetch(url, {
-    next: { revalidate: 3600 } 
-  });
+  try {
+    const res = await fetch(url, {
+      next: { 
+        revalidate: 3600,
+        tags: ['events'] // * Allows for manual revalidation later
+      } 
+    });
 
-  if (!res.ok) throw new Error('Failed to fetch events');
-  return res.json();
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return [];
+  }
 }
