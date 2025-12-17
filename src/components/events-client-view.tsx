@@ -4,7 +4,7 @@ import { EventsPagination } from "@/components/events-pagination";
 import { EventsTable } from "@/components/events-table";
 import { StatCard } from "@/components/stat-card";
 import { Input } from "@/components/ui/input";
-import { useEventsUrl } from "@/hooks/use-events-url"; // New
+import { useEventsUrl } from "@/hooks/use-events-url";
 import { Event, EVENT_STATUS } from '@/types/event';
 import { useMemo } from 'react';
 
