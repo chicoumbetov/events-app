@@ -1,8 +1,8 @@
 'use client';
 
+import { EventsPagination } from "@/components/events-pagination";
 import { EventsTable } from "@/components/events-table";
 import { StatCard } from "@/components/stat-card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Event, EVENT_STATUS } from '@/types/event';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -44,35 +44,22 @@ export default function EventsPage() {
   const updateURL = (newParams: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams);
     Object.entries(newParams).forEach(([key, value]) => {
-      if (value === null || value === 'all') {
-        params.delete(key);
-      } else {
-        params.set(key, value);
-      }
+      if (value === null || value === 'all') params.delete(key);
+      else params.set(key, value);
     });
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const handleStatusChange = (value: string) => updateURL({ status: value, page: '1' });
-  const handleSortChange = () => updateURL({ sort: sortOrder === 'asc' ? 'desc' : 'asc' });
-  const handlePageChange = (newPage: number) => updateURL({ page: newPage.toString() });
-
-  const stats = useMemo(() => {
-    return {
-      total: events.length,
-      upcoming: events.filter(e => e.status === EVENT_STATUS.UPCOMING).length,
-      live: events.filter(e => e.status === EVENT_STATUS.LIVE).length,
-      past: events.filter(e => e.status === EVENT_STATUS.PAST).length,
-    };
-  }, [events]);
+  const stats = useMemo(() => ({
+    total: events.length,
+    upcoming: events.filter(e => e.status === EVENT_STATUS.UPCOMING).length,
+    live: events.filter(e => e.status === EVENT_STATUS.LIVE).length,
+    past: events.filter(e => e.status === EVENT_STATUS.PAST).length,
+  }), [events]);
 
   const processedEvents = useMemo(() => {
     let result = [...events];
-
-    if (currentStatus !== 'all') {
-      result = result.filter(e => e.status === currentStatus);
-    }
-
+    if (currentStatus !== 'all') result = result.filter(e => e.status === currentStatus);
     if (searchQuery) {
       const term = searchQuery.toLowerCase().trim();
       result = result.filter(e => 
@@ -81,13 +68,11 @@ export default function EventsPage() {
         e.zone.name.toLowerCase().includes(term)
       );
     }
-
     result.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
       return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
     });
-
     return result;
   }, [events, currentStatus, sortOrder, searchQuery]);
 
@@ -102,9 +87,7 @@ export default function EventsPage() {
 
   return (
     <div className="container mx-auto py-10 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold">Events Management</h1>
-      </div>
+      <h1 className="text-3xl font-bold">Events Management</h1>
 
       <div className="grid gap-4 md:grid-cols-4">
         <StatCard title="Total Events" value={stats.total} />
@@ -115,7 +98,7 @@ export default function EventsPage() {
 
       <div className="w-full md:w-72">
         <Input 
-          placeholder="Search by event type (e.g. Dinner)..." 
+          placeholder="Search by event or city..." 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -125,27 +108,18 @@ export default function EventsPage() {
         <EventsTable 
           events={paginatedEvents} 
           currentStatus={currentStatus}
-          onStatusChange={handleStatusChange}
+          onStatusChange={(v) => updateURL({ status: v, page: '1' })}
           sortOrder={sortOrder}
-          onSortChange={handleSortChange}
+          onSortChange={() => updateURL({ sort: sortOrder === 'asc' ? 'desc' : 'asc' })}
         />
 
-        <div className="flex items-center justify-between py-2">
-          <p className="text-sm text-muted-foreground">
-            Showing {paginatedEvents.length} of {processedEvents.length} filtered results
-          </p>
-          <div className="flex items-center space-x-2">
-            <div className="text-sm text-muted-foreground mr-4">
-              Page {currentPage} of {Math.max(totalPages, 1)}
-            </div>
-            <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage <= 1}>
-              Previous
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage >= totalPages}>
-              Next
-            </Button>
-          </div>
-        </div>
+        <EventsPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalFiltered={processedEvents.length}
+          showingCount={paginatedEvents.length}
+          onPageChange={(p) => updateURL({ page: p.toString() })}
+        />
       </div>
     </div>
   );
